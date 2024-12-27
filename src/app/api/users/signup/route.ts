@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
@@ -36,8 +37,6 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     if (error.code === 11000) {
       // Check for duplicate key error
-      console.log(error);
-      console.error("Username already exists. Please choose another one.");
       return NextResponse.json(
         { error: "Username already exists. Please choose another one." },
         { status: 500 }

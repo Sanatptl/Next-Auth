@@ -11,19 +11,23 @@ export const sendMail = async function (
 
   if (emailType == "VERIFY") {
     await User.findByIdAndUpdate(userID, {
-      verifyToken: hashedToken,
-      verifyTokenExpiry: Date.now() + 86400000,
+      $set: {
+        verifyToken: hashedToken,
+        verifyTokenExpiry: Date.now() + 86400000,
+      },
     });
   } else if (emailType == "RESET") {
     await User.findByIdAndUpdate(userID, {
-      resetKeyToken: hashedToken,
-      resetKeyTokenExpiry: Date.now() + 7200,
+      $set: {
+        resetKeyToken: hashedToken,
+        resetKeyTokenExpiry: Date.now() + 720000,
+      },
     });
   }
   const host = process.env.MAILTRAP_HOST as string;
   const port = Number(process.env.MAILTRAP_PORT);
   const user = process.env.MAILTRAP_USER as string;
-  const pass = process.env.MAILTRAP_PASSWORD as string;
+  const pass = process.env.MAILTRAP_PASSWORD;
   try {
     const transporter = nodemailer.createTransport({
       host,
@@ -51,7 +55,7 @@ export const sendMail = async function (
     };
 
     const mailresponse = await transporter.sendMail(mailOptions);
-    console.log(mailresponse);
+    // console.log("log@nodemailer",mailresponse);
     return mailresponse;
   } catch (error: any) {
     console.log(error.message);
